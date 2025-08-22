@@ -18,5 +18,5 @@ ENV PYTHONPATH="/app/src:/app:$PYTHONPATH"
 # Expose the port that Cloud Run will use
 EXPOSE $PORT
 
-# Run the simple, reliable Cloud Run MCP server
-CMD ["uv", "run", "simple_cloud_run_server.py"]
+# Run the working Cloud Run MCP server with HTTP bridge
+CMD ["uv", "run", "working_cloud_run_server.py"]

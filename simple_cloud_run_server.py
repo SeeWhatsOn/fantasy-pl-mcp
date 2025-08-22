@@ -205,6 +205,13 @@ class SimpleCloudRunHandler(BaseHTTPRequestHandler):
     def _process_mcp_method(self, method: str, params: dict, request_id) -> dict:
         """Process MCP method and return response"""
         
+        # Import the actual MCP server to get real data
+        try:
+            from src.fpl_mcp.__main__ import mcp as fpl_mcp_server
+        except ImportError:
+            logger.error("Could not import FPL MCP server")
+            return self._error_response(request_id, -32603, "Server import failed")
+        
         if method == "initialize":
             return {
                 "jsonrpc": "2.0",
@@ -341,25 +348,18 @@ class SimpleCloudRunHandler(BaseHTTPRequestHandler):
             }
         
         else:
-            return {
-                "jsonrpc": "2.0",
-                "id": request_id,
-                "error": {
-                    "code": -32601,
-                    "message": f"Method not found: {method}",
-                    "data": {
-                        "available_methods": [
-                            "initialize",
-                            "resources/list", 
-                            "resources/read",
-                            "tools/list",
-                            "tools/call", 
-                            "prompts/list",
-                            "prompts/get"
-                        ]
-                    }
-                }
+            return self._error_response(request_id, -32601, f"Method not found: {method}")
+    
+    def _error_response(self, request_id, code: int, message: str) -> dict:
+        """Create an error response"""
+        return {
+            "jsonrpc": "2.0",
+            "id": request_id,
+            "error": {
+                "code": code,
+                "message": message
             }
+        }
     
     def _send_error(self, status_code: int, message: str):
         """Send error response"""
