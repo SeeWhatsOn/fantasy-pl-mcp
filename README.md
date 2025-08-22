@@ -12,6 +12,15 @@
 
 A Model Context Protocol (MCP) server that provides access to Fantasy Premier League (FPL) data and tools. This server allows you to interact with FPL data in Claude for Desktop and other MCP-compatible clients.
 
+## 🚀 Cloud Deployment Available
+
+This MCP server can now be deployed to **Google Cloud Run** for remote access! See [`DEPLOYMENT.md`](DEPLOYMENT.md) for complete deployment instructions.
+
+**Quick Deploy:**
+```bash
+chmod +x deploy.sh && ./deploy.sh
+```
+
 *Demo of the Fantasy Premier League MCP Server in action*
 
 [![Fantasy Premier League MCP Demo](https://img.youtube.com/vi/QfOOOQ_jeMA/0.jpg)](https://youtu.be/QfOOOQ_jeMA)
