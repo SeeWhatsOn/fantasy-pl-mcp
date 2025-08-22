@@ -185,11 +185,84 @@ gcloud run services update fpl-mcp-server \
   --concurrency=80
 ```
 
-## Cost Considerations
+## Cost Analysis & Controls
 
-- **Free Tier**: Cloud Run offers 2 million requests and 360,000 GB-seconds per month for free
-- **Pricing**: Pay only for actual usage (CPU, memory, requests)
-- **Optimization**: Use `--min-instances=0` to scale to zero when not in use
+### Timeout & Resource Controls
+
+The deployment includes built-in cost controls:
+
+```bash
+--memory=512Mi          # Reduced memory allocation
+--cpu=1                 # Single CPU allocation
+--min-instances=0       # Scales to ZERO when not in use (no cost!)
+--max-instances=5       # Limits maximum concurrent instances
+--concurrency=80        # Max requests per instance
+--timeout=300          # 5-minute request timeout
+--cpu-throttling       # Enables CPU throttling for cost savings
+```
+
+### Cost Breakdown (US pricing)
+
+**When NOT in use (most of the time):**
+- **$0.00/hour** - Scales to zero instances
+
+**When actively handling requests:**
+- **CPU**: ~$0.000024/vCPU-second ($0.086/hour per vCPU)
+- **Memory**: ~$0.0000025/GiB-second ($0.009/hour per GiB)
+- **Requests**: $0.40 per million requests
+
+**Typical hourly costs when active:**
+- **Light usage** (few requests): ~$0.05-0.10/hour
+- **Moderate usage** (100+ requests): ~$0.10-0.20/hour
+- **Heavy usage** (1000+ requests): ~$0.20-0.50/hour
+
+### Monthly Cost Estimates
+
+**Cloud Run Free Tier (first 2M requests, 360K GB-seconds):**
+- Most personal usage: **$0-5/month**
+- Moderate usage: **$5-20/month**
+- Heavy usage: **$20-50/month**
+
+### Cost Optimization Features
+
+✅ **Auto Scale-to-Zero**: No cost when idle (99% of the time)  
+✅ **Request Timeout**: 5-minute limit prevents runaway costs  
+✅ **Instance Limits**: Max 5 concurrent instances  
+✅ **CPU Throttling**: Reduces CPU costs when possible  
+✅ **Memory Optimized**: 512Mi instead of 1Gi saves ~45%  
+
+### Free Tier Limits
+
+Google Cloud Run free tier includes:
+- **2 million requests** per month
+- **360,000 GB-seconds** of compute time per month
+- **1 GB network egress** per month from North America
+
+**For typical MCP usage, you'll likely stay within free tier limits.**
+
+### Set Up Billing Alerts
+
+Automatically monitor costs and get notified:
+
+```bash
+chmod +x setup-billing-alerts.sh
+./setup-billing-alerts.sh
+```
+
+This sets up alerts at 50%, 80%, and 100% of your budget ($10 default).
+
+### Manual Cost Monitoring
+
+```bash
+# View current month's costs
+gcloud billing budgets list --billing-account=YOUR_BILLING_ACCOUNT
+
+# Check service usage
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=fpl-mcp-server" --limit=50
+
+# Monitor request volume
+gcloud monitoring metrics list --filter="resource.type=cloud_run_revision"
+```
 
 ## Security Considerations
 

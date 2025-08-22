@@ -1,0 +1,68 @@
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+CHANGELOG.md
+CONTRIBUTING.md
+DEPLOYMENT.md
+DISTRIBUTION.md
+PYPI.md
+PYPI_SETUP_CHANGES.md
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env
+
+# Testing
+tests/
+.coverage
+htmlcov/
+.pytest_cache/
+.cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Scripts and setup files (not needed in container)
+install.bat
+install.sh
+install_mcp.py
+setup.py
+deploy.sh
+setup-billing-alerts.sh
+validate.sh
+test_server.py
+
+# Project specific cache
+server/fpl_cache/
+src/fpl_mcp/fpl_cache/
+
+# Keep these files for Docker build:
+# - pyproject.toml (needed)
+# - uv.lock (needed)
+# - src/ (needed)
+# - server.py (needed)
+# - Dockerfile (not copied but context)

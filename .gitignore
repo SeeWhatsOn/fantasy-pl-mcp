@@ -50,4 +50,4 @@ src/fpl_mcp/fpl_cache/
 htmlcov/
 .pytest_cache/
 
-uv.lock
+# uv.lock - commented out for Docker builds

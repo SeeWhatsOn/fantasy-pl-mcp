@@ -53,9 +53,13 @@ gcloud run deploy $SERVICE_NAME \
     --image $IMAGE_URL \
     --region=$REGION \
     --allow-unauthenticated \
-    --memory=1Gi \
+    --memory=512Mi \
     --cpu=1 \
-    --max-instances=10 \
+    --min-instances=0 \
+    --max-instances=5 \
+    --concurrency=80 \
+    --timeout=300 \
+    --cpu-throttling \
     --set-env-vars="ENVIRONMENT=production" \
     --project=$PROJECT_ID
 
