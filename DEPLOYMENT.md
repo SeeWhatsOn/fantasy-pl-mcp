@@ -134,7 +134,9 @@ gcloud logging read "resource.type=cloud_run_revision AND resource.labels.servic
 
 ## Claude Desktop Integration
 
-To use the deployed MCP server with Claude Desktop, add this configuration to your `claude_desktop_config.json`:
+To use the deployed remote MCP server with Claude Desktop, add this configuration to your `claude_desktop_config.json`:
+
+### Option 1: Using MCP Proxy (Recommended)
 
 ```json
 {
@@ -144,16 +146,48 @@ To use the deployed MCP server with Claude Desktop, add this configuration to yo
       "args": [
         "@modelcontextprotocol/server-everything",
         "proxy",
-        "https://YOUR-SERVICE-URL-HERE"
+        "https://YOUR-SERVICE-URL-HERE/mcp"
       ]
     }
   }
 }
 ```
 
-Replace `YOUR-SERVICE-URL-HERE` with the actual Cloud Run service URL.
+### Option 2: Using Remote HTTP Transport
 
-**Note**: No authentication configuration needed since the service allows public access.
+```json
+{
+  "mcpServers": {
+    "fpl-mcp": {
+      "type": "http",
+      "url": "https://YOUR-SERVICE-URL-HERE/mcp"
+    }
+  }
+}
+```
+
+### Option 3: Using MCP Remote Package
+
+```bash
+npm install -g @modelcontextprotocol/mcp-remote
+```
+
+```json
+{
+  "mcpServers": {
+    "fpl-mcp": {
+      "command": "mcp-remote",
+      "args": [
+        "https://YOUR-SERVICE-URL-HERE/mcp"
+      ]
+    }
+  }
+}
+```
+
+Replace `YOUR-SERVICE-URL-HERE` with your actual Cloud Run service URL (e.g., `https://fpl-mcp-server-123456789-uc.a.run.app`).
+
+**Note**: The server implements proper MCP HTTP transport with both SSE and HTTP JSON-RPC endpoints at `/mcp`.
 
 ## Monitoring and Troubleshooting
 
