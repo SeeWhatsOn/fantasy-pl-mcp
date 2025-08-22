@@ -1408,8 +1408,26 @@ atexit.register(cleanup_auth)
 # Main function for direct execution and entry point
 def main():
     """Run the Fantasy Premier League MCP server."""
-    logger.info("Starting Fantasy Premier League MCP Server")
-    mcp.run()
+    import os
+    
+    # Check if we're running in Cloud Run (has PORT env var)
+    port = os.environ.get("PORT")
+    
+    if port:
+        # Cloud Run environment - use HTTP transport
+        logger.info(f"Starting Fantasy Premier League MCP Server on HTTP port {port}")
+        try:
+            port = int(port)
+            mcp.run_http(host="0.0.0.0", port=port)
+        except Exception as e:
+            logger.error(f"Failed to start HTTP server: {e}")
+            # Fallback to stdio for local testing
+            logger.info("Falling back to stdio transport")
+            mcp.run()
+    else:
+        # Local environment - use stdio transport
+        logger.info("Starting Fantasy Premier League MCP Server with stdio transport")
+        mcp.run()
 
 # Run the server if executed directly
 if __name__ == "__main__":

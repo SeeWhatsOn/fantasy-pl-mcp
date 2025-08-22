@@ -6,8 +6,6 @@ HTTP server entry point for Fantasy Premier League MCP server on Google Cloud Ru
 import os
 import logging
 import sys
-from mcp.server.fastmcp import FastMCP
-from mcp.server import serve
 
 # Set up logging for Cloud Run
 logging.basicConfig(
@@ -18,9 +16,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def main():
-    """Run the MCP server with HTTP transport for Cloud Run."""
+    """Run the MCP server for Cloud Run."""
     # Get port from environment variable (Cloud Run sets this)
     port = int(os.environ.get("PORT", 8080))
+    
+    # Set the port for the MCP server to use
+    os.environ["PORT"] = str(port)
     
     # Log environment info
     environment = os.environ.get("ENVIRONMENT", "development")
@@ -37,22 +38,23 @@ def main():
     logger.info(f"FPL credentials available: {has_fpl_creds}")
     
     try:
-        # Import the main MCP server
-        from src.fpl_mcp.__main__ import mcp
+        # Import and run the main MCP server
+        from src.fpl_mcp.__main__ import main as mcp_main
         
         logger.info("MCP server imported successfully")
+        logger.info(f"Starting server on port {port}")
         
-        # Serve using HTTP transport
-        serve(
-            mcp,
-            transport_type="http",
-            host="0.0.0.0",
-            port=port
-        )
+        # Run the MCP server main function
+        mcp_main()
         
+    except ImportError as e:
+        logger.error(f"Failed to import MCP server: {e}")
+        logger.error("Make sure the src/fpl_mcp package is properly installed")
+        sys.exit(1)
     except Exception as e:
         logger.error(f"Failed to start server: {e}")
-        raise
+        logger.exception("Server startup failed")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

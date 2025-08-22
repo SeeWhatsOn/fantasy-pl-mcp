@@ -6,14 +6,11 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 # Set working directory
 WORKDIR /app
 
-# Copy pyproject.toml and uv.lock first (for better caching)
-COPY pyproject.toml uv.lock ./
+# Copy all files first (needed for setuptools build)
+COPY . .
 
 # Install dependencies using uv
-RUN uv sync --frozen
-
-# Copy the rest of the project files
-COPY . .
+RUN uv sync
 
 # Expose the port that Cloud Run will use
 EXPOSE $PORT
